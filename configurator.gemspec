@@ -1,11 +1,11 @@
 Gem::Specification.new do |s|
-  s.name        = 'config_helper'
+  s.name        = 'configurator'
   s.version     = '0.0.1'
-  s.summary     = 'Config Helper'
+  s.summary     = 'Configurator: A Config Helper'
   s.description = 'Simple web application extension for configuring applications from the environment, following the 12factor pattern.'
   s.authors     = ['Joshua Mervine']
   s.email       = 'joshua@mervine.net'
-  s.files       = ['lib/config_helper.rb']
-  s.homepage    = 'https://github.com/heroku/config_helper'
+  s.files       = ['lib/configurator.rb']
+  s.homepage    = 'https://github.com/heroku/configurator'
   s.license     = 'MIT'
 end

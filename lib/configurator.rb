@@ -1,6 +1,6 @@
 require 'uri'
 
-module ConfigHelper
+module Configurator
   def required(name, method=nil)
     value = cast(ENV.fetch(name.to_s.upcase), method)
     create(name, value)

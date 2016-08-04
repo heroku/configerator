@@ -1,4 +1,4 @@
-# config_helper
+# configurator
 
 ## Usage
 
@@ -7,7 +7,7 @@
 ```ruby
 # file: config/config.rb
 module Config
-  extend ConfigHelper
+  extend Configurator
 
   required :something
   optional :anotherthing
@@ -21,7 +21,7 @@ end
 require 'config_helper'
 
 module Config
-  extend ConfigHelper
+  extend Configurator
 
   required :something
   optional :anotherthing

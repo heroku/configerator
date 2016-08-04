@@ -1,12 +1,12 @@
 require 'uri'
 require 'minitest/autorun'
-require './lib/config_helper'
+require './lib/configurator'
 
 module Config
-  extend ConfigHelper
+  extend Configurator
 end
 
-class TestConfigHelper < Minitest::Test
+class TestConfigurator < Minitest::Test
   FIXTURES = {
     test_required: 'required',
     test_optional: 'optional',
