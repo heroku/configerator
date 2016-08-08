@@ -1,5 +1,18 @@
 # configerator
 
+## Install
+
+```ruby
+# file: Gemfile
+gem 'configerator'
+```
+
+Or...
+
+```bash
+$ gem install configerator
+```
+
 ## Usage
 
 ### Rails
