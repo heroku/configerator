@@ -15,6 +15,11 @@ module Config
 end
 ```
 
+```ruby
+# file: config/application.rb
+require_relative 'config'
+```
+
 ### Pure Ruby
 
 **As a module**
