@@ -1,5 +1,7 @@
 # configerator
 
+> This was adapted from the configuration implementation in [Pliny](https://github.com/interagent/pliny).
+
 ## Install
 
 ```ruby
