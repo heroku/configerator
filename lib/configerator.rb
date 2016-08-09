@@ -11,6 +11,11 @@ module Configerator
     create(name, value)
   end
 
+  def optional!(name, method=nil)
+    value = cast(ENV[name.to_s.upcase], method)
+    create!(name, value)
+  end
+
   def override(name, default, method=nil)
     value = cast(ENV.fetch(name.to_s.upcase, default), method)
     create(name, value)
@@ -64,5 +69,17 @@ module Configerator
     instance_variable_set(:"@#{name}", value)
     instance_eval "def #{name}; @#{name} end", __FILE__, __LINE__
     instance_eval "def #{name}?; !!@#{name} end", __FILE__, __LINE__
+  end
+
+  def create!(name, value)
+    instance_variable_set(:"@#{name}", value)
+    instance_eval "def #{name}?; !!@#{name} end", __FILE__, __LINE__
+    instance_eval <<-RUBY
+      def #{name}
+        raise "key not set \\"#{name}\\""\ unless @#{name}
+
+        @#{name}
+      end
+    RUBY
   end
 end

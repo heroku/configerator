@@ -69,6 +69,15 @@ class TestConfigerator < Minitest::Test
     assert_nil Config.test_missing_optional
   end
 
+  def test_optional!
+    Config.send(:optional!, :test_optional_bang)
+
+    refute Config.send(:test_optional_bang?)
+    assert_raises RuntimeError do
+      Config.send(:test_optional_bang)
+    end
+  end
+
   def test_override
     Config.send(:override, :test_override, 'override_default')
 
