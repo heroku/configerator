@@ -19,6 +19,9 @@ class TestConfigerator < Minitest::Test
     test_url: 'https://99.com',
     test_array_int: [ 9, 9 ],
     test_array: [ 'nine', 'nine' ],
+
+    test_group1: 'one',
+    test_group2: 'two'
   }.freeze
 
   def setup
@@ -78,6 +81,23 @@ class TestConfigerator < Minitest::Test
     assert_nil Config.test_missing_optional
   end
 
+  def test_optional_grouping
+    Config.send(:optional, { test_group: [ :test_group1, :test_group2 ] })
+
+    assert Config.test_group1
+    assert Config.test_group2
+    assert Config.test_group?
+  end
+
+  def test_optional_grouping_missing
+    Config.send(:optional, { test_group: [ :test_group1, :test_group2, :test_group3 ] })
+
+    assert Config.test_group1
+    assert Config.test_group2
+    refute Config.test_group3
+    refute Config.test_group?
+  end
+
   def test_override
     Config.send(:override, :test_override, 'override_default')
 
@@ -102,7 +122,9 @@ class TestConfigerator < Minitest::Test
 
     unless %w[ required optional override url ].include? caster
       method = \
-        if caster =~ /_/
+        if caster =~ /group/
+          nil
+        elsif caster =~ /_/
           parts = caster.split('_')
           Config.send(parts.first.to_sym, Config.send(parts.last.to_sym))
         else

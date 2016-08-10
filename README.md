@@ -25,6 +25,9 @@ $ gem install configerator
     * Require a key, raise a `RuntimeError` if key is not supplied when `key` is requested.
 * `optional :key`
     * Create `key`, set to `nil` if not present.
+* `optional group_name: [ :key1, :key2 ]`
+    * Create keys &mdash; `key1` and `key2`
+    * Create group validor &mdash; `group_name?` &mdash; which returns true if all keys are set.
 * `override :key, :value`
     * Create `key`, set to `value` if not present.
 
