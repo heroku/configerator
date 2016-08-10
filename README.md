@@ -1,5 +1,7 @@
 # configerator
 
+Simple module for implementing environment based configuration following the 12factor pattern.
+
 > This was adapted from the configuration implementation in [Pliny](https://github.com/interagent/pliny).
 
 ## Install
