@@ -38,6 +38,15 @@ class TestConfigerator < Minitest::Test
     assert Config.test_required?
   end
 
+  def test_required_on_load_false
+    Config.send(:required, :test_required2, error_on_load: false)
+
+    refute Config.send(:test_required2?)
+    assert_raises RuntimeError do
+      Config.send(:test_required2)
+    end
+  end
+
   def test_required_with_method
     Config.send(:required, :test_required, with_method)
 
