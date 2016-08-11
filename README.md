@@ -32,6 +32,8 @@ $ gem install configerator
 
 ```ruby
 # file: config/config.rb
+require 'configurator'
+
 module Config
   extend Configerator
 
@@ -43,6 +45,10 @@ end
 
 ```ruby
 # file: config/application.rb
+require_relative 'boot'
+require 'rails/all'
+
+# after to let rails framework to load first
 require_relative 'config'
 ```
 
@@ -82,6 +88,19 @@ class Foo
     puts "Doing %s with %s on %s" % [ something, anotherthing, port ]
   end
 end
+```
+
+### Auto-detecting Dotenv
+
+Configerator will autodetect [Dotenv](https://github.com/bkeepers/dotenv) or
+`dotenv-rails` and load it so that its environment variables are available
+as soon as the Configerator is ready.
+
+If you wish to bypass this autodetecting because of your apps specific needs,
+you can do this by requiring the library directly:
+
+```ruby
+require 'configerator/configerator'
 ```
 
 ## Development
