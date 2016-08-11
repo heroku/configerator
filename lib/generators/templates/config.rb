@@ -4,28 +4,38 @@ module Config
   extend Configerator
 
   #
-  # REQUIREDS - exception is raised for these variables when missing
+  # REQUIRED - exception is raised for these variables when missing
   #
 
-  # required :foo, string
+  # required :database_url, string
 
   # You can also defer raising an error until the key is requested:
-  # required :bar, error_on_load: false, string
+  # required :database_url, error_on_load: false, string
 
 
   #
-  # OPTIONALS - value is returned or nil if it wasn't present
+  # OPTIONAL - value is returned or nil if it wasn't present
   #
 
-  # optional :bar, string
+  optional :app_name, string
 
 
   #
-  # OVERRIDES - value is returned or the set default
+  # OVERRIDE - value is returned or the set default
   #
 
   override :rack_env,  'development', string
   override :rails_env, 'development', string
+
+  # Other examplse
+  # override :database_timeout, 10,    int
+  # override :db_pool,          5,     int
+  # override :force_ssl,        true,  bool
+  # override :port,             5000,  int
+  # override :puma_max_threads, 16,    int
+  # override :puma_min_threads, 1,     int
+  # override :puma_workers,     3,     int
+  # override :raise_errors,     false, bool
 
 
   #
