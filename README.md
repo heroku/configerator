@@ -29,23 +29,12 @@ $ gem install configerator
     * Create `key`, set to `nil` if not present.
 * `override :key, :value`
     * Create `key`, set to `value` if not present.
-* `group :name { optional :key }`
-    * Creates a validator for all defined keys in the block &mdash; e.g. `name?`
 * `namespace :name { optional :key }`
     * Namespaces a collection of keys &mdash; e.g. `name_key`
     * Creates a validator for all defined keys in the block &mdash; e.g. `name?`
+    * Skip prefixing namespace for variables and methods with `prefix: false`
 
 ```ruby
-# group example
-group :server do
-    optional :bind
-    optional :port
-end
-
-# where
-server?
-#=> true # if bind? && port?
-
 # namespace example
 namespace :aws do
     required :token
@@ -55,7 +44,16 @@ end
 
 # where
 aws?
+
 #=> true # if aws_token? && aws_secret? && aws_region?
+namespace :etc do
+    required :foo
+    required :bar
+end
+
+# where
+etc?
+#=> true # if foo? && bar?
 ```
 
 ### Rails

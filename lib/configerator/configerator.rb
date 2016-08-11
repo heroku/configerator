@@ -16,19 +16,14 @@ module Configerator
     create(name, value)
   end
 
-  def group name, &block
-    @processed = []
-    yield
-    instance_eval "def #{name}?; !!(#{@processed.join(' && ')}) end"
-  ensure
-    @processed = []
-  end
-
   def namespace namespace, prefix: true, &block
+    @processed = []
     @prefix = "#{namespace}_" if prefix
-    group(namespace) { yield }
+    yield
+    instance_eval "def #{namespace}?; !!(#{@processed.join(' && ')}) end"
   ensure
     @prefix = nil
+    @processed = []
   end
 
   def override(name, default, method=nil)
