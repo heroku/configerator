@@ -27,11 +27,36 @@ $ gem install configerator
     * Require a key, raise a `RuntimeError` if key is not supplied when `key` is requested.
 * `optional :key`
     * Create `key`, set to `nil` if not present.
-* `optional group_name: [ :key1, :key2 ]`
-    * Create keys &mdash; `key1` and `key2`
-    * Create group validor &mdash; `group_name?` &mdash; which returns true if all keys are set.
 * `override :key, :value`
     * Create `key`, set to `value` if not present.
+* `group :name { optional :key }`
+    * Creates a validator for all defined keys in the block &mdash; e.g. `name?`
+* `namespace :name { optional :key }`
+    * Namespaces a collection of keys &mdash; e.g. `name_key`
+    * Creates a validator for all defined keys in the block &mdash; e.g. `name?`
+
+```ruby
+# group example
+group :server do
+    optional :bind
+    optional :port
+end
+
+# where
+server?
+#=> true # if bind? && port?
+
+# namespace example
+namespace :aws do
+    required :token
+    required :secret
+    optional :region
+end
+
+# where
+aws?
+#=> true # if aws_token? && aws_secret? && aws_region?
+```
 
 ### Rails
 
