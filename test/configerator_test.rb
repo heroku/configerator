@@ -21,7 +21,13 @@ class TestConfigerator < Minitest::Test
     test_array: [ 'nine', 'nine' ],
 
     test_group1: 'one',
-    test_group2: 'two'
+    test_group2: 'two',
+
+    test_ns1: 'ns1',
+    test_ns2: 'ns2',
+
+    ns1: 'ns1',
+    ns2: 'ns2'
   }.freeze
 
   def setup
@@ -81,21 +87,63 @@ class TestConfigerator < Minitest::Test
     assert_nil Config.test_missing_optional
   end
 
-  def test_optional_grouping
-    Config.send(:optional, { test_group: [ :test_group1, :test_group2 ] })
+  def test_group
+    Config.group :test_group do
+      Config.required :test_group1
+      Config.optional :test_group2
+      Config.override :test_group3, "three"
+    end
 
     assert Config.test_group1
     assert Config.test_group2
+    assert Config.test_group3
     assert Config.test_group?
   end
 
-  def test_optional_grouping_missing
-    Config.send(:optional, { test_group: [ :test_group1, :test_group2, :test_group3 ] })
+  def test_group_missing
+    Config.group :test_group do
+      Config.required :test_group1
+      Config.optional :test_group2
+      Config.override :test_group3, "three"
+      Config.optional :test_group4
+    end
 
     assert Config.test_group1
     assert Config.test_group2
-    refute Config.test_group3
+    assert Config.test_group3
+    refute Config.test_group4
     refute Config.test_group?
+  end
+
+  def test_namespace
+    Config.namespace :test do
+      Config.optional :ns1
+      Config.optional :ns2
+    end
+
+    assert Config.test_ns1
+    assert Config.test_ns2
+  end
+
+  def test_namespace_without_prefix
+    Config.namespace :test, prefix: false do
+      Config.optional :ns1
+      Config.optional :ns2
+    end
+
+    assert Config.ns1
+    assert Config.ns2
+  end
+
+  def test_namepsace_without_group
+    Config.namespace :test, group: false do
+      Config.optional :ns1
+      Config.optional :ns2
+    end
+
+    assert Config.test_ns1
+    assert Config.test_ns2
+    refute Config.method_defined?(:test)
   end
 
   def test_override
@@ -120,11 +168,9 @@ class TestConfigerator < Minitest::Test
   FIXTURES.each do |meth, val|
     caster = meth.to_s.gsub(/^test_/, '')
 
-    unless %w[ required optional override url ].include? caster
+    unless %w[ required optional override url ns1 ns2 group1 group2 ].include? caster
       method = \
-        if caster =~ /group/
-          nil
-        elsif caster =~ /_/
+        if caster =~ /_/
           parts = caster.split('_')
           Config.send(parts.first.to_sym, Config.send(parts.last.to_sym))
         else
