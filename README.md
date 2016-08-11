@@ -37,9 +37,9 @@ $ gem install configerator
 ```ruby
 # namespace example
 namespace :aws do
-    required :token
-    required :secret
-    optional :region
+    required :token,  string
+    required :secret, string
+    optional :region, string
 end
 
 # where
@@ -47,8 +47,8 @@ aws?
 
 #=> true # if aws_token? && aws_secret? && aws_region?
 namespace :etc do
-    required :foo
-    required :bar
+    required :foo, string
+    required :bar, string
 end
 
 # where
@@ -75,9 +75,9 @@ require 'configurator'
 module Config
   extend Configerator
 
-  required :something
-  optional :anotherthing
-  override :port, 3000, int
+  required :something,    string
+  optional :anotherthing, string
+  override :port, 3000,   int
 end
 ```
 
@@ -100,9 +100,9 @@ require 'configerator'
 module Config
   extend Configerator
 
-  required :something
-  optional :anotherthing
-  override :port, 3000, int
+  required :something,    string
+  optional :anotherthing, string
+  override :port, 3000,   int
 end
 
 puts "#{Config.something}, and maybe: '#{Config.anotherthing}', all with #{Config.port}"
@@ -117,9 +117,9 @@ class Foo
   include Configerator
 
   def initialize
-    required :something
-    optional :anotherthing
-    override :port, 3000, int
+    required :something.    string
+    optional :anotherthing, string
+    override :port, 3000,   int
   end
 
   def run
