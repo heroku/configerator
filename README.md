@@ -30,6 +30,16 @@ $ gem install configerator
 
 ### Rails
 
+You can generate a config file, thusly:
+
+```bash
+rails generate config
+```
+
+This will generate a configuration with tips in comments.
+
+Overtime your config will be customized to your app:
+
 ```ruby
 # file: config/config.rb
 module Config
