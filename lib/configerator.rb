@@ -17,10 +17,8 @@ end
 
 begin
   # fallback to Dotenv
-  unless defined?(Dotenv::Railtie)
-    require 'dotenv'
-    Dotenv.load
-  end
+  require 'dotenv'
+  Dotenv.load
 rescue LoadError
   # dotenv not available
-end
+end unless defined?(Dotenv::Railtie)
