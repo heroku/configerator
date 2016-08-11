@@ -46,6 +46,10 @@ module Config
   #   def app_name
   #     "blammo-#{rails_env}"
   #   end
+  #
+  #   def root
+  #     Rails.root
+  #   end
   # end
 
   #
