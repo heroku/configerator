@@ -135,17 +135,6 @@ class TestConfigerator < Minitest::Test
     assert Config.ns2
   end
 
-  def test_namepsace_without_group
-    Config.namespace :test, group: false do
-      Config.optional :ns1
-      Config.optional :ns2
-    end
-
-    assert Config.test_ns1
-    assert Config.test_ns2
-    refute Config.method_defined?(:test)
-  end
-
   def test_override
     Config.send(:override, :test_override, 'override_default')
 
