@@ -1,5 +1,7 @@
 # configerator
 
+Simple module for implementing environment based configuration following the 12factor pattern.
+
 > This was adapted from the configuration implementation in [Pliny](https://github.com/interagent/pliny).
 
 ## Install
@@ -27,6 +29,34 @@ $ gem install configerator
     * Create `key`, set to `nil` if not present.
 * `override :key, :value`
     * Create `key`, set to `value` if not present.
+* `namespace :name { optional :key }`
+    * Namespaces a collection of keys &mdash; e.g. `name_key`
+    * Creates a validator for all defined keys in the block &mdash; e.g. `name?`
+    * Skip prefixing namespace for variables and methods with `prefix: false`
+
+```ruby
+# namespace example
+namespace :aws do
+    required :token,  string
+    required :secret, string
+    optional :region, string
+end
+
+# where
+aws?
+
+#=> true # if aws_token? && aws_secret? && aws_region?
+
+# namespace without prefix
+namespace :etc, prefix: false do
+    required :foo, string
+    required :bar, string
+end
+
+# where
+etc?
+#=> true # if foo? && bar?
+```
 
 ### Rails
 
@@ -47,9 +77,9 @@ require 'configurator'
 module Config
   extend Configerator
 
-  required :something
-  optional :anotherthing
-  override :port, 3000, int
+  required :something,    string
+  optional :anotherthing, string
+  override :port, 3000,   int
 end
 ```
 
@@ -72,9 +102,9 @@ require 'configerator'
 module Config
   extend Configerator
 
-  required :something
-  optional :anotherthing
-  override :port, 3000, int
+  required :something,    string
+  optional :anotherthing, string
+  override :port, 3000,   int
 end
 
 puts "#{Config.something}, and maybe: '#{Config.anotherthing}', all with #{Config.port}"
@@ -89,9 +119,9 @@ class Foo
   include Configerator
 
   def initialize
-    required :something
-    optional :anotherthing
-    override :port, 3000, int
+    required :something.    string
+    optional :anotherthing, string
+    override :port, 3000,   int
   end
 
   def run

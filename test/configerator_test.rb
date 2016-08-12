@@ -19,6 +19,12 @@ class TestConfigerator < Minitest::Test
     test_url: 'https://99.com',
     test_array_int: [ 9, 9 ],
     test_array: [ 'nine', 'nine' ],
+
+    test_ns1: 'ns1',
+    test_ns2: 'ns2',
+
+    ns1: 'ns1',
+    ns2: 'ns2'
   }.freeze
 
   def setup
@@ -32,23 +38,26 @@ class TestConfigerator < Minitest::Test
   end
 
   def test_required
-    Config.send(:required, :test_required)
+    Config.required :test_required
 
     assert_equal Config.test_required, 'required'
     assert Config.test_required?
   end
 
   def test_required_on_load_false
-    Config.send(:required, :test_required2, error_on_load: false)
+    Config.required :test_required2, error_on_load: false
 
-    refute Config.send(:test_required2?)
     assert_raises RuntimeError do
-      Config.send(:test_required2)
+      Config.test_required2?
+    end
+
+    assert_raises RuntimeError do
+      Config.test_required2
     end
   end
 
   def test_required_with_method
-    Config.send(:required, :test_required, with_method)
+    Config.required :test_required, with_method
 
     assert_equal Config.test_required, 'method:required'
     assert Config.test_required?
@@ -56,42 +65,80 @@ class TestConfigerator < Minitest::Test
 
   def test_required_missing
     assert_raises KeyError do
-      Config.send(:required, :test_missing)
+      Config.required :test_missing
     end
   end
 
   def test_optional
-    Config.send(:optional, :test_optional)
+    Config.optional :test_optional
 
     assert_equal Config.test_optional, 'optional'
   end
 
   def test_optional_with_method
-    Config.send(:optional, :test_optional, with_method)
+    Config.optional :test_optional, with_method
 
     assert_equal Config.test_optional, 'method:optional'
   end
 
   def test_optional_missing
-    Config.send(:optional, :test_missing_optional)
+    Config.optional :test_missing_optional
 
     assert_nil Config.test_missing_optional
   end
 
+  def test_namespace
+    Config.namespace :test do
+      Config.required :ns1
+      Config.optional :ns2
+      Config.override :ns3, "three"
+    end
+
+    assert Config.test_ns1
+    assert Config.test_ns2
+    assert Config.test_ns3
+    assert Config.test?
+  end
+
+  def test_namepsace_missing
+    Config.namespace :test do
+      Config.required :ns1
+      Config.optional :ns2
+      Config.override :ns3, "three"
+      Config.optional :ns4
+    end
+
+    assert Config.test_ns1
+    assert Config.test_ns2
+    assert Config.test_ns3
+    refute Config.test_ns4
+    refute Config.test?
+  end
+
+  def test_namespace_without_prefix
+    Config.namespace :test, prefix: false do
+      Config.optional :ns1
+      Config.optional :ns2
+    end
+
+    assert Config.ns1
+    assert Config.ns2
+  end
+
   def test_override
-    Config.send(:override, :test_override, 'override_default')
+    Config.override :test_override, 'override_default'
 
     assert_equal Config.test_override, 'override'
   end
 
   def test_override_with_method
-    Config.send(:override, :test_override, 'override_default', with_method)
+    Config.override :test_override, 'override_default', with_method
 
     assert_equal Config.test_override, 'method:override'
   end
 
   def test_override_missing
-    Config.send(:override, :test_override_missing, 'override_default')
+    Config.override :test_override_missing, 'override_default'
 
     assert_equal Config.test_override_missing, 'override_default'
   end
@@ -100,7 +147,7 @@ class TestConfigerator < Minitest::Test
   FIXTURES.each do |meth, val|
     caster = meth.to_s.gsub(/^test_/, '')
 
-    unless %w[ required optional override url ].include? caster
+    unless %w[ required optional override url ns1 ns2 ].include? caster
       method = \
         if caster =~ /_/
           parts = caster.split('_')
@@ -110,7 +157,7 @@ class TestConfigerator < Minitest::Test
         end
 
       define_method(meth) do
-        Config.send(:required, meth, method)
+        Config.required meth, method
 
         assert_equal Config.send(meth), val
       end
@@ -118,7 +165,7 @@ class TestConfigerator < Minitest::Test
   end
 
   def test_url
-    Config.send(:required, :test_url, Config.url)
+    Config.required :test_url, Config.url
 
     assert_equal Config.test_url, URI.parse('https://99.com')
   end

@@ -1,6 +1,8 @@
 require 'uri'
 
 module Configerator
+  @processed = []
+
   def required(name, method=nil, error_on_load: true)
     # Hash#fetch raises a KeyError, Hash#[] doesn't
     value = error_on_load ? ENV.fetch(name.to_s.upcase) : ENV[name.to_s.upcase]
@@ -12,6 +14,16 @@ module Configerator
   def optional(name, method=nil)
     value = cast(ENV[name.to_s.upcase], method)
     create(name, value)
+  end
+
+  def namespace namespace, prefix: true, &block
+    @processed = []
+    @prefix = "#{namespace}_" if prefix
+    yield
+    instance_eval "def #{namespace}?; !!(#{@processed.join(' && ')}) end"
+  ensure
+    @prefix = nil
+    @processed = []
   end
 
   def override(name, default, method=nil)
@@ -64,8 +76,13 @@ module Configerator
   end
 
   def create(name, value, error_on_load=true)
+    name = "#{@prefix}#{name}"
+
     instance_variable_set(:"@#{name}", value)
     instance_eval "def #{name}; @#{name} || (raise \"key not set '#{name}'\" unless #{error_on_load}) end"
-    instance_eval "def #{name}?; !!@#{name} end", __FILE__, __LINE__
+    instance_eval "def #{name}?; !!#{name} end", __FILE__, __LINE__
+
+    @processed ||= []
+    @processed << name
   end
 end
