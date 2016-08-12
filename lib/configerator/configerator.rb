@@ -77,12 +77,12 @@ module Configerator
 
   def create(name, value, error_on_load=true)
     name = "#{@prefix}#{name}"
-    var_name = :"@#{name}"
-    instance_variable_set(var_name, value)
+
+    instance_variable_set(:"@#{name}", value)
     instance_eval "def #{name}; @#{name} || (raise \"key not set '#{name}'\" unless #{error_on_load}) end"
-    instance_eval "def #{name}?; !!@#{name} end", __FILE__, __LINE__
+    instance_eval "def #{name}?; !!#{name} end", __FILE__, __LINE__
 
     @processed ||= []
-    @processed << var_name
+    @processed << name
   end
 end

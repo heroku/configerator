@@ -46,7 +46,9 @@ end
 aws?
 
 #=> true # if aws_token? && aws_secret? && aws_region?
-namespace :etc do
+
+# namespace without prefix
+namespace :etc, prefix: false do
     required :foo, string
     required :bar, string
 end
