@@ -153,6 +153,8 @@ in your `spec_helper.rb`.
 
 You would then use `.env` for shared configurations across all environments.
 
+#### Disabling
+
 Of course if this doesn't work for your needs you can bypass autodetecting
 and loading of `Dotenv`. You can do this by requiring the library directly:
 
