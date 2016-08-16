@@ -141,7 +141,7 @@ as soon as the Configerator is ready.
 your `.env` files.  This may be of some surprise when it loads both your
 `.env` and `.env.test` configurations.
 
-This is because `dotenv-rails` loads environment files in this order:
+When `dotenv-rails` initializes, it loads environment files in this order:
 
 * .env.local
 * .env.$RAILS_ENV
