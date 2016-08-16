@@ -136,8 +136,23 @@ Configerator will autodetect [Dotenv](https://github.com/bkeepers/dotenv) or
 `dotenv-rails` and load it so that its environment variables are available
 as soon as the Configerator is ready.
 
-If you wish to bypass this autodetecting because of your apps specific needs,
-you can do this by requiring the library directly:
+NOTE: For Rails projects, Configerator uses the `dotenv-rails`
+[method to load](https://github.com/bkeepers/dotenv/blob/master/lib/dotenv/rails.rb#L26-L32)
+your `.env` files.  This may be of some surprise when it loads both your
+`.env` and `.env.test`.  This is because `dotenv-rails` loads environment
+files in this order:
+
+* .env.local
+* .env.$RAILS_ENV
+* .env
+
+We recommend that you use `.env.development` instead of `.env` for your
+development configurations.  and `.env.test` for your test configurations.
+One nice side effect is you will no longer have to `Dotenv.load(".env.test")`
+in your `spec_helper.rb`.
+
+Of course if this doesn't work for your needs you can bypass autodetecting
+and loading of Dotenv. You can do this by requiring the library directly:
 
 ```ruby
 require 'configerator/configerator'
