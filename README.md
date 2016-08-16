@@ -138,7 +138,7 @@ as soon as the Configerator is ready.
 
 > **NOTE**: For Rails projects, Configerator uses the `dotenv-rails`
 [method to load](https://github.com/bkeepers/dotenv/blob/master/lib/dotenv/rails.rb#L26-L32)
-your `.env` files.  This may be of some surprise when it loads both your
+your `.env` files.  This may be of some surprise when it loads _both_ your
 `.env` and `.env.test` configurations.
 
 When `dotenv-rails` initializes, it loads environment files in this order:
