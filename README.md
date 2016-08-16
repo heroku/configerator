@@ -143,9 +143,9 @@ your `.env` files.  This may be of some surprise when it loads both your
 
 When `dotenv-rails` initializes, it loads environment files in this order:
 
-* .env.local
-* .env.$RAILS_ENV
-* .env
+* `.env.local`
+* `.env.$RAILS_ENV`
+* `.env`
 
 We recommend that you use `.env.development` instead of `.env` for your
 development configurations  and `.env.test` for your test configurations.
