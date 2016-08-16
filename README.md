@@ -151,8 +151,10 @@ development configurations.  and `.env.test` for your test configurations.
 One nice side effect is you will no longer have to `Dotenv.load(".env.test")`
 in your `spec_helper.rb`.
 
+You can also use `.env` for shared configurations across all environments.
+
 Of course if this doesn't work for your needs you can bypass autodetecting
-and loading of Dotenv. You can do this by requiring the library directly:
+and loading of `Dotenv`. You can do this by requiring the library directly:
 
 ```ruby
 require 'configerator/configerator'
