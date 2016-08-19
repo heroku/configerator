@@ -63,7 +63,7 @@ etc?
 You can generate a config file, thusly:
 
 ```bash
-rails generate config
+rails generate configerator:config
 ```
 
 This will generate a configuration into `config/config.rb` with tips in comments.
