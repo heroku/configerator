@@ -119,7 +119,7 @@ class Foo
   include Configerator
 
   def initialize
-    required :something.    string
+    required :something,    string
     optional :anotherthing, string
     override :port, 3000,   int
   end
