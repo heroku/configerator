@@ -23,7 +23,7 @@ $ gem install configerator
 
 * `required :key`
     * Require a key, raise a `KeyError` if key is not supplied on application start up.
-* `requied :key, error_on_load: false`
+* `required :key, error_on_load: false`
     * Require a key, raise a `RuntimeError` if key is not supplied when `key` is requested.
 * `optional :key`
     * Create `key`, set to `nil` if not present.
@@ -119,7 +119,7 @@ class Foo
   include Configerator
 
   def initialize
-    required :something.    string
+    required :something,    string
     optional :anotherthing, string
     override :port, 3000,   int
   end
