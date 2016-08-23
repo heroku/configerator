@@ -1,21 +1,24 @@
 # configerator
 
-Simple module for implementing environment based configuration following the 12factor pattern.
+Simple module for implementing environment based configuration following the [The Twelve-factor App](https://12factor.net/) pattern.
 
 > This was adapted from the configuration implementation in [Pliny](https://github.com/interagent/pliny).
 
-## Install
+## Installation
+
+Add this line to your application's Gemfile:
 
 ```ruby
-# file: Gemfile
 gem 'configerator'
 ```
 
-Or...
+And then execute:
 
-```bash
-$ gem install configerator
-```
+    $ bundle
+
+Or install it yourself as:
+
+    $ gem install configerator
 
 ## Usage
 
@@ -37,9 +40,9 @@ $ gem install configerator
 ```ruby
 # namespace example
 namespace :aws do
-    required :token,  string
-    required :secret, string
-    optional :region, string
+  required :token,  string
+  required :secret, string
+  optional :region, string
 end
 
 # where
@@ -49,8 +52,8 @@ aws?
 
 # namespace without prefix
 namespace :etc, prefix: false do
-    required :foo, string
-    required :bar, string
+  required :foo, string
+  required :bar, string
 end
 
 # where
