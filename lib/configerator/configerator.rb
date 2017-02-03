@@ -80,16 +80,24 @@ module Configerator
   end
 
   def create(name, value, error_on_load=true)
-    name = "#{@prefix}#{name}"
+    orig = stringify_key(name)
+    pfxd = prefixize_key(name)
+    meth = pfxd.downcase
 
-    instance_variable_set(:"@#{name}", value)
-    instance_eval "def #{name}; @#{name} || (raise \"key not set '#{name}'\" unless #{error_on_load}) end"
-    instance_eval "def #{name}?; !!#{name} end", __FILE__, __LINE__
+    instance_variable_set(:"@#{meth}", value)
+
+    if has_prefix?
+      instance_eval "def #{meth}; @#{meth} || (raise 'keys not set: \"#{pfxd}\" or \"#{orig}\"' unless #{error_on_load}) end"
+    else
+      instance_eval "def #{meth}; @#{meth} || (raise 'key not set: \"#{orig}\"' unless #{error_on_load}) end"
+    end
+
+    instance_eval "def #{meth}?; !!#{meth} end", __FILE__, __LINE__
 
     return unless has_prefix?
 
     @processed ||= []
-    @processed << name
+    @processed << meth
   end
 
   def stringify_key(key)
@@ -120,7 +128,13 @@ module Configerator
             end
 
     if value.nil? && error_on_load
-      raise KeyError, "keys not found: \"#{prefixed_key}\" or \"#{stringified_key}\""
+      message = if has_prefix?
+                  "keys not found: \"#{prefixed_key}\" or \"#{stringified_key}\""
+                else
+                  "key not found: \"#{stringified_key}\""
+                end
+
+        raise KeyError, message
     end
 
     value

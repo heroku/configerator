@@ -63,9 +63,29 @@ class TestConfigerator < Minitest::Test
     assert Config.test_required?
   end
 
-  def test_required_missing
+  def test_required_missing_on_load
     assert_raises KeyError do
       Config.required :test_missing
+    end
+
+    begin
+      Config.required :test_missing
+    rescue => ex
+      assert_equal ex.message, 'key not found: "TEST_MISSING"'
+    end
+  end
+
+  def test_required_missing_on_call
+    Config.required :test_missing, error_on_load: false
+
+    assert_raises RuntimeError do
+      Config.test_missing
+    end
+
+    begin
+      Config.test_missing
+    rescue => ex
+      assert_equal ex.message, 'key not set: "TEST_MISSING"'
     end
   end
 
@@ -118,6 +138,38 @@ class TestConfigerator < Minitest::Test
     assert Config.test_namespace3
     refute Config.test_namespace4
     refute Config.test?
+  end
+
+  def test_namespace_required_missing_on_load
+    assert_raises KeyError do
+      Config.namespace :test do
+        Config.required :namespace99
+      end
+    end
+
+    begin
+      Config.namespace :test do
+        Config.required :namespace99
+      end
+    rescue => ex
+      assert_equal ex.message, 'keys not found: "TEST_NAMESPACE99" or "NAMESPACE99"'
+    end
+  end
+
+  def test_namespace_required_missing_on_call
+    Config.namespace :test do
+      Config.required :namespace99, error_on_load: false
+    end
+
+    assert_raises RuntimeError do
+      Config.test_namespace99
+    end
+
+    begin
+      Config.test_namespace99
+    rescue => ex
+      assert_equal ex.message, 'keys not set: "TEST_NAMESPACE99" or "NAMESPACE99"'
+    end
   end
 
   def test_override
