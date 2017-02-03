@@ -5,7 +5,6 @@ module Configerator
 
   def required(name, method=nil, error_on_load: true)
     # Hash#fetch raises a KeyError, Hash#[] doesn't
-    #value = error_on_load ? ENV.fetch(prefixize_key(name)) : ENV[prefixize_key(name)]
     value = fetch_env(name, error_on_load: error_on_load)
 
     value = cast(value, method)
@@ -14,13 +13,11 @@ module Configerator
   end
 
   def optional(name, method=nil)
-    #value = cast(ENV[prefixize_key(name)], method)
     value = cast(fetch_env(name), method)
     create(name, value)
   end
 
   def override(name, default, method=nil)
-    #value = cast(ENV.fetch(prefixize_key(name), default), method)
     value = cast(fetch_env(name, default: default), method)
     create(name, value)
   end
