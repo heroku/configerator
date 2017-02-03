@@ -20,11 +20,11 @@ class TestConfigerator < Minitest::Test
     test_array_int: [ 9, 9 ],
     test_array: [ 'nine', 'nine' ],
 
-    test_ns1: 'ns1',
-    test_ns2: 'ns2',
+    test_namespace1: 'namespace1',
+    test_namespace2: 'namespace2',
 
-    ns1: 'ns1',
-    ns2: 'ns2'
+    namespace10: 'namespace10',
+    namespace11: 'namespace11'
   }.freeze
 
   def setup
@@ -89,40 +89,35 @@ class TestConfigerator < Minitest::Test
 
   def test_namespace
     Config.namespace :test do
-      Config.required :ns1
-      Config.optional :ns2
-      Config.override :ns3, "three"
+      Config.required :namespace1
+      Config.optional :namespace2
+      Config.override :namespace3, "three"
+
+      Config.required :namespace10
+      Config.optional :namespace11
     end
 
-    assert Config.test_ns1
-    assert Config.test_ns2
-    assert Config.test_ns3
+    assert Config.test_namespace1
+    assert Config.test_namespace2
+    assert Config.test_namespace3
+    assert Config.test_namespace10
+    assert Config.test_namespace11
     assert Config.test?
   end
 
   def test_namepsace_missing
     Config.namespace :test do
-      Config.required :ns1
-      Config.optional :ns2
-      Config.override :ns3, "three"
-      Config.optional :ns4
+      Config.required :namespace1
+      Config.optional :namespace2
+      Config.override :namespace3, "three"
+      Config.optional :namespace4
     end
 
-    assert Config.test_ns1
-    assert Config.test_ns2
-    assert Config.test_ns3
-    refute Config.test_ns4
+    assert Config.test_namespace1
+    assert Config.test_namespace2
+    assert Config.test_namespace3
+    refute Config.test_namespace4
     refute Config.test?
-  end
-
-  def test_namespace_without_prefix
-    Config.namespace :test, prefix: false do
-      Config.optional :ns1
-      Config.optional :ns2
-    end
-
-    assert Config.ns1
-    assert Config.ns2
   end
 
   def test_override
@@ -147,7 +142,7 @@ class TestConfigerator < Minitest::Test
   FIXTURES.each do |meth, val|
     caster = meth.to_s.gsub(/^test_/, '')
 
-    unless %w[ required optional override url ns1 ns2 ].include? caster
+    unless %w[required optional override url].include?(caster) || caster.start_with?("namespace")
       method = \
         if caster =~ /_/
           parts = caster.split('_')

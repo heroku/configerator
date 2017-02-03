@@ -5,14 +5,23 @@ module Configerator
 
   def required(name, method=nil, error_on_load: true)
     # Hash#fetch raises a KeyError, Hash#[] doesn't
-    value = error_on_load ? ENV.fetch(name.to_s.upcase) : ENV[name.to_s.upcase]
+    #value = error_on_load ? ENV.fetch(prefixize_key(name)) : ENV[prefixize_key(name)]
+    value = fetch_env(name, error_on_load: error_on_load)
+
     value = cast(value, method)
 
     create(name, value, error_on_load)
   end
 
   def optional(name, method=nil)
-    value = cast(ENV[name.to_s.upcase], method)
+    #value = cast(ENV[prefixize_key(name)], method)
+    value = cast(fetch_env(name), method)
+    create(name, value)
+  end
+
+  def override(name, default, method=nil)
+    #value = cast(ENV.fetch(prefixize_key(name), default), method)
+    value = cast(fetch_env(name, default: default), method)
     create(name, value)
   end
 
@@ -24,11 +33,6 @@ module Configerator
   ensure
     @prefix = nil
     @processed = []
-  end
-
-  def override(name, default, method=nil)
-    value = cast(ENV.fetch(name.to_s.upcase, default), method)
-    create(name, value)
   end
 
   def int
@@ -82,7 +86,43 @@ module Configerator
     instance_eval "def #{name}; @#{name} || (raise \"key not set '#{name}'\" unless #{error_on_load}) end"
     instance_eval "def #{name}?; !!#{name} end", __FILE__, __LINE__
 
+    return unless has_prefix?
+
     @processed ||= []
     @processed << name
+  end
+
+  def stringify_key(key)
+    key.to_s.upcase
+  end
+
+  def has_prefix?
+    defined?(@prefix) && !@prefix.nil? && @prefix != ""
+  end
+
+  def prefixize_key(key)
+    key = "#{@prefix}#{key}" if has_prefix?
+
+    stringify_key(key)
+  end
+
+  def fetch_env(key, error_on_load: false, default: nil)
+    stringified_key = stringify_key(key)
+
+    value = if has_prefix?
+              # handle two possible keys
+              prefixed_key = prefixize_key(key)
+
+              ENV[prefixed_key] || ENV[stringified_key] || default
+            else
+              # handle one possible keys
+              ENV[stringified_key] || default
+            end
+
+    if value.nil? && error_on_load
+      raise KeyError, "keys not found: \"#{prefixed_key}\" or \"#{stringified_key}\""
+    end
+
+    value
   end
 end
