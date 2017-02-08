@@ -64,14 +64,12 @@ class TestConfigerator < Minitest::Test
   end
 
   def test_required_missing_on_load
-    assert_raises KeyError do
-      Config.required :test_missing
-    end
-
     begin
       Config.required :test_missing
     rescue => ex
       assert_equal ex.message, 'key not found: "TEST_MISSING"'
+    else
+      fail "expected KeyError to be raised"
     end
   end
 
@@ -168,7 +166,7 @@ class TestConfigerator < Minitest::Test
     begin
       Config.test_namespace99
     rescue => ex
-      assert_equal ex.message, 'keys not set: "TEST_NAMESPACE99" or "NAMESPACE99"'
+      assert_equal ex.message, 'key not set: "TEST_NAMESPACE99" or "NAMESPACE99"'
     end
   end
 

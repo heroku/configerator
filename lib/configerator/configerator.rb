@@ -78,16 +78,13 @@ module Configerator
 
   def create(name, value, error_on_load=true)
     orig = stringify_key(name)
-    pfxd = prefixize_key(name)
+    pfxd = prefix_key(name)
     meth = pfxd.downcase
 
     instance_variable_set(:"@#{meth}", value)
 
-    if has_prefix?
-      instance_eval "def #{meth}; @#{meth} || (raise 'keys not set: \"#{pfxd}\" or \"#{orig}\"' unless #{error_on_load}) end"
-    else
-      instance_eval "def #{meth}; @#{meth} || (raise 'key not set: \"#{orig}\"' unless #{error_on_load}) end"
-    end
+    reported_keys = has_prefix? ? "\"#{pfxd}\" or \"#{orig}\"" : "\"#{orig}\""
+    instance_eval "def #{meth}; @#{meth} || (raise 'key not set: #{reported_keys}' unless #{error_on_load}) end"
 
     instance_eval "def #{meth}?; !!#{meth} end", __FILE__, __LINE__
 
@@ -105,7 +102,7 @@ module Configerator
     defined?(@prefix) && !@prefix.nil? && @prefix != ""
   end
 
-  def prefixize_key(key)
+  def prefix_key(key)
     key = "#{@prefix}#{key}" if has_prefix?
 
     stringify_key(key)
@@ -116,11 +113,11 @@ module Configerator
 
     value = if has_prefix?
               # handle two possible keys
-              prefixed_key = prefixize_key(key)
+              prefixed_key = prefix_key(key)
 
               ENV[prefixed_key] || ENV[stringified_key] || default
             else
-              # handle one possible keys
+              # handle one possible key
               ENV[stringified_key] || default
             end
 
