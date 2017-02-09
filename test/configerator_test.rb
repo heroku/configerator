@@ -66,7 +66,7 @@ class TestConfigerator < Minitest::Test
   def test_required_missing_on_load
     begin
       Config.required :test_missing
-    rescue => ex
+    rescue KeyError => ex
       assert_equal ex.message, 'key not found: "TEST_MISSING"'
     else
       fail "expected KeyError to be raised"
@@ -76,14 +76,12 @@ class TestConfigerator < Minitest::Test
   def test_required_missing_on_call
     Config.required :test_missing, error_on_load: false
 
-    assert_raises RuntimeError do
-      Config.test_missing
-    end
-
     begin
       Config.test_missing
-    rescue => ex
+    rescue RuntimeError => ex
       assert_equal ex.message, 'key not set: "TEST_MISSING"'
+    else
+      fail "expected RuntimeError to be raised"
     end
   end
 
