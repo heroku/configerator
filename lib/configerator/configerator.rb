@@ -1,15 +1,12 @@
 require 'uri'
 
 module Configerator
-  @processed = []
-
+  # Initializers (DSL)
   def required(name, method=nil, error_on_load: true)
-    # Hash#fetch raises a KeyError, Hash#[] doesn't
+    ad
     value = fetch_env(name, error_on_load: error_on_load)
 
-    value = cast(value, method)
-
-    create(name, value, error_on_load)
+    create(name, cast(value, method), error_on_load)
   end
 
   def optional(name, method=nil)
@@ -24,14 +21,18 @@ module Configerator
 
   def namespace namespace, prefix: true, &block
     @processed = []
+    @is_namespace = true
     @prefix = "#{namespace}_" if prefix
+
     yield
-    instance_eval "def #{namespace}?; !!(#{@processed.join(' && ')}) end"
+
+    instance_eval "def #{namespace}?; !!(#{@processed.join(' && ')}) end", __FILE__, __LINE__
   ensure
     @prefix = nil
     @processed = []
   end
 
+  # Scope methods
   def int
     ->(v) { v.to_i }
   end
@@ -70,6 +71,7 @@ module Configerator
     end
   end
 
+  # Helpers
   private
 
   def cast(value, method)
@@ -77,59 +79,30 @@ module Configerator
   end
 
   def create(name, value, error_on_load=true)
-    orig = stringify_key(name)
-    pfxd = prefix_key(name)
-    meth = pfxd.downcase
+    name = stringify_key(name).downcase
 
-    instance_variable_set(:"@#{meth}", value)
+    instance_variable_set(:"@#{name}", value)
 
-    reported_keys = has_prefix? ? "\"#{pfxd}\" or \"#{orig}\"" : "\"#{orig}\""
-    instance_eval "def #{meth}; @#{meth} || (raise 'key not set: #{reported_keys}' unless #{error_on_load}) end"
+    instance_eval "def #{name}; @#{name} || (raise 'key not set: \"#{name.upcase}\"' unless #{error_on_load}) end", __FILE__, __LINE__
+    instance_eval "def #{name}?; !!#{name} end", __FILE__, __LINE__
 
-    instance_eval "def #{meth}?; !!#{meth} end", __FILE__, __LINE__
-
-    return unless has_prefix?
+    return unless @is_namespace
 
     @processed ||= []
-    @processed << meth
+    @processed << name
   end
 
   def stringify_key(key)
+    key = "#{@prefix}#{key}" if defined?(@prefix) && !@prefix.nil? && @prefix != ""
+
     key.to_s.upcase
   end
 
-  def has_prefix?
-    defined?(@prefix) && !@prefix.nil? && @prefix != ""
-  end
-
-  def prefix_key(key)
-    key = "#{@prefix}#{key}" if has_prefix?
-
-    stringify_key(key)
-  end
-
   def fetch_env(key, error_on_load: false, default: nil)
-    stringified_key = stringify_key(key)
+    key   = stringify_key(key)
+    value = ENV[key] || default
 
-    value = if has_prefix?
-              # handle two possible keys
-              prefixed_key = prefix_key(key)
-
-              ENV[prefixed_key] || ENV[stringified_key] || default
-            else
-              # handle one possible key
-              ENV[stringified_key] || default
-            end
-
-    if value.nil? && error_on_load
-      message = if has_prefix?
-                  "keys not found: \"#{prefixed_key}\" or \"#{stringified_key}\""
-                else
-                  "key not found: \"#{stringified_key}\""
-                end
-
-        raise KeyError, message
-    end
+    raise KeyError, "key not found: \"#{key}\"" if value.nil? && error_on_load
 
     value
   end
