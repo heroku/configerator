@@ -7,6 +7,8 @@ clean:
 	bundle clean
 
 test:
-	bundle exec ruby -Ilib:test ./test/*_test.rb
+	bundle exec rspec -fd ./spec/
+
+spec: test
 
 .PHONY: test
