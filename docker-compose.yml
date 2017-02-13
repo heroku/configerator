@@ -4,3 +4,27 @@ test:
   volumes:
     - '.:/app/user'
   command: 'make'
+test_2_3:
+  image: ruby:2.3
+  working_dir: /app/user
+  volumes:
+    - '.:/app/user'
+  command: 'make'
+test_2_2:
+  image: ruby:2.2
+  working_dir: /app/user
+  volumes:
+    - '.:/app/user'
+  command: 'make'
+test_2_1:
+  image: ruby:2.1
+  working_dir: /app/user
+  volumes:
+    - '.:/app/user'
+  command: 'make'
+test_2_0:
+  image: ruby:2.0
+  working_dir: /app/user
+  volumes:
+    - '.:/app/user'
+  command: 'make'

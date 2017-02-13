@@ -3,7 +3,6 @@ require 'uri'
 module Configerator
   # Initializers (DSL)
   def required(name, method=nil, error_on_load: true)
-    ad
     value = fetch_env(name, error_on_load: error_on_load)
 
     create(name, cast(value, method), error_on_load)
