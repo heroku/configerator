@@ -16,6 +16,6 @@ regression:
 	docker-compose run test_2_0
 	docker-compose run test_2_1
 	docker-compose run test_2_2
-	docker-compose run test_2_4
+	docker-compose run test_2_3
 
 .PHONY: test
