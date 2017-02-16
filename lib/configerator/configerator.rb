@@ -89,7 +89,7 @@ module Configerator
   end
 
   def stringify_key(key)
-    key = "#{@prefix}#{key}" if defined?(@prefix) && !@prefix.nil? && @prefix != ""
+    key = "#{@prefix}#{key}" if @prefix
 
     key.to_s.upcase
   end
