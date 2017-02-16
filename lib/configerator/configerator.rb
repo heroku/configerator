@@ -14,7 +14,7 @@ module Configerator
   end
 
   def override(name, default, method=nil)
-    value = cast(fetch_env(name, default: default), method)
+    value = cast(fetch_env(name) || default, method)
     create(name, value)
   end
 
@@ -94,12 +94,9 @@ module Configerator
     key.to_s.upcase
   end
 
-  def fetch_env(key, error_on_load: false, default: nil)
-    key   = build_key(key)
-    value = ENV[key] || default
+  def fetch_env(key, error_on_load: false)
+    key = build_key(key)
 
-    raise KeyError, "key not found: \"#{key}\"" if value.nil? && error_on_load
-
-    value
+    error_on_load ? ENV.fetch(key) : ENV[key]
   end
 end

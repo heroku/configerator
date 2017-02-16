@@ -15,18 +15,14 @@ describe Configerator do
     end
 
     it "errors when missing required value" do
-      with_environment foo: nil do
-        expect { config.required :foo }.to raise_error(KeyError)
-      end
+      expect { config.required :foo }.to raise_error(KeyError)
     end
 
     it "errors when calling missing required value when error_on_load: false" do
-      with_environment foo: nil do
-        config.required :foo, error_on_load: false
+      config.required :foo, error_on_load: false
 
-        expect { config.foo  }.to raise_error(RuntimeError)
-        expect { config.foo? }.to raise_error(RuntimeError)
-      end
+      expect { config.foo  }.to raise_error(RuntimeError)
+      expect { config.foo? }.to raise_error(RuntimeError)
     end
 
     describe "with method" do
@@ -53,12 +49,10 @@ describe Configerator do
     end
 
     it "accepts missing value" do
-      with_environment foo: nil do
-        config.optional :foo
+      config.optional :foo
 
-        expect(config.foo).to  be nil
-        expect(config.foo?).to be false
-      end
+      expect(config.foo).to  be nil
+      expect(config.foo?).to be false
     end
 
     describe "with method" do
@@ -85,12 +79,10 @@ describe Configerator do
     end
 
     it "uses default with missing value" do
-      with_environment foo: nil do
-        config.override :foo, "bah"
+      config.override :foo, "bah"
 
-        expect(config.foo).to  eq "bah"
-        expect(config.foo?).to be true
-      end
+      expect(config.foo).to  eq "bah"
+      expect(config.foo?).to be true
     end
 
     describe "with method" do
@@ -105,11 +97,9 @@ describe Configerator do
       end
 
       it "applies method when not set" do
-        with_environment foo: nil do
-          config.override :foo, "bah", method
+        config.override :foo, "bah", method
 
-          expect(config.foo).to  eq "method:bah"
-        end
+        expect(config.foo).to  eq "method:bah"
       end
     end
   end
@@ -185,45 +175,37 @@ describe Configerator do
 
     describe "respects required errors" do
       it "throws error on load" do
-        with_environment example_foo: nil do
-          expect {
-            config.namespace :example do
-              config.required :foo, error_on_load: true
-            end
-          }.to raise_error(KeyError)
-        end
+        expect {
+          config.namespace :example do
+            config.required :foo, error_on_load: true
+          end
+        }.to raise_error(KeyError)
 
-        with_environment foo: nil do
-          expect {
-            config.namespace :example, prefix: false do
-              config.required :foo, error_on_load: true
-            end
-          }.to raise_error(KeyError)
-        end
+        expect {
+          config.namespace :example, prefix: false do
+            config.required :foo, error_on_load: true
+          end
+        }.to raise_error(KeyError)
       end
     end
 
     describe "respects required error on call" do
       it "throws error on load" do
-        with_environment example_foo: nil do
-          config.namespace :example do
-            config.required :foo, error_on_load: false
-          end
-
-          expect { config.example_foo }.to  raise_error(RuntimeError)
-          expect { config.example_foo? }.to raise_error(RuntimeError)
-          expect { config.example? }.to     raise_error(RuntimeError)
+        config.namespace :example do
+          config.required :foo, error_on_load: false
         end
 
-        with_environment foo: nil do
-          config.namespace :example, prefix: false do
-            config.required :foo, error_on_load: false
-          end
+        expect { config.example_foo }.to  raise_error(RuntimeError)
+        expect { config.example_foo? }.to raise_error(RuntimeError)
+        expect { config.example? }.to     raise_error(RuntimeError)
 
-          expect { config.foo }.to      raise_error(RuntimeError)
-          expect { config.foo? }.to     raise_error(RuntimeError)
-          expect { config.example? }.to raise_error(RuntimeError)
+        config.namespace :example, prefix: false do
+          config.required :foo, error_on_load: false
         end
+
+        expect { config.foo }.to      raise_error(RuntimeError)
+        expect { config.foo? }.to     raise_error(RuntimeError)
+        expect { config.example? }.to raise_error(RuntimeError)
       end
     end
   end
