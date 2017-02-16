@@ -77,7 +77,7 @@ module Configerator
   end
 
   def create(name, value, error_on_load=true)
-    name = stringify_key(name).downcase
+    name = build_key(name).downcase
 
     instance_variable_set(:"@#{name}", value)
 
@@ -88,14 +88,14 @@ module Configerator
     @processed << name
   end
 
-  def stringify_key(key)
+  def build_key(key)
     key = "#{@prefix}#{key}" if @prefix
 
     key.to_s.upcase
   end
 
   def fetch_env(key, error_on_load: false, default: nil)
-    key   = stringify_key(key)
+    key   = build_key(key)
     value = ENV[key] || default
 
     raise KeyError, "key not found: \"#{key}\"" if value.nil? && error_on_load
