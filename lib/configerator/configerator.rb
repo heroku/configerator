@@ -20,7 +20,6 @@ module Configerator
 
   def namespace namespace, prefix: true, &block
     @processed = []
-    @is_namespace = true
     @prefix = "#{namespace}_" if prefix
 
     yield
@@ -84,8 +83,6 @@ module Configerator
 
     instance_eval "def #{name}; @#{name} || (raise 'key not set: \"#{name.upcase}\"' unless #{error_on_load}) end", __FILE__, __LINE__
     instance_eval "def #{name}?; !!#{name} end", __FILE__, __LINE__
-
-    return unless @is_namespace
 
     @processed ||= []
     @processed << name
