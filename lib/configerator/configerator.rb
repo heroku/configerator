@@ -3,9 +3,9 @@ require 'uri'
 module Configerator
   # Initializers (DSL)
   def required(name, method=nil, error_on_load: true)
-    value = fetch_env(name, error_on_load: error_on_load)
+    value = cast(fetch_env(name, error_on_load: error_on_load), method)
 
-    create(name, cast(value, method), error_on_load)
+    create(name, value, error_on_load)
   end
 
   def optional(name, method=nil)
