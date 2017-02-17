@@ -6,4 +6,4 @@ rvm:
   - 2.0
 sudo: false
 bundler_args: --without development
-script: make spec
+script: bundle exec rake
