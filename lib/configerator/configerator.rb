@@ -1,36 +1,36 @@
 require 'uri'
 
 module Configerator
-  @processed = []
-
+  # Initializers (DSL)
   def required(name, method=nil, error_on_load: true)
-    # Hash#fetch raises a KeyError, Hash#[] doesn't
-    value = error_on_load ? ENV.fetch(name.to_s.upcase) : ENV[name.to_s.upcase]
-    value = cast(value, method)
+    value = cast(fetch_env(name, error_on_load: error_on_load), method)
 
     create(name, value, error_on_load)
   end
 
   def optional(name, method=nil)
-    value = cast(ENV[name.to_s.upcase], method)
+    value = cast(fetch_env(name), method)
+    create(name, value)
+  end
+
+  def override(name, default, method=nil)
+    value = cast(fetch_env(name) || default, method)
     create(name, value)
   end
 
   def namespace namespace, prefix: true, &block
     @processed = []
     @prefix = "#{namespace}_" if prefix
+
     yield
-    instance_eval "def #{namespace}?; !!(#{@processed.join(' && ')}) end"
+
+    instance_eval "def #{namespace}?; !!(#{@processed.join(' && ')}) end", __FILE__, __LINE__
   ensure
     @prefix = nil
     @processed = []
   end
 
-  def override(name, default, method=nil)
-    value = cast(ENV.fetch(name.to_s.upcase, default), method)
-    create(name, value)
-  end
-
+  # Scope methods
   def int
     ->(v) { v.to_i }
   end
@@ -69,6 +69,7 @@ module Configerator
     end
   end
 
+  # Helpers
   private
 
   def cast(value, method)
@@ -76,13 +77,26 @@ module Configerator
   end
 
   def create(name, value, error_on_load=true)
-    name = "#{@prefix}#{name}"
+    name = build_key(name).downcase
 
     instance_variable_set(:"@#{name}", value)
-    instance_eval "def #{name}; @#{name} || (raise \"key not set '#{name}'\" unless #{error_on_load}) end"
+
+    instance_eval "def #{name}; @#{name} || (raise 'key not set: \"#{name.upcase}\"' unless #{error_on_load}) end", __FILE__, __LINE__
     instance_eval "def #{name}?; !!#{name} end", __FILE__, __LINE__
 
     @processed ||= []
     @processed << name
+  end
+
+  def build_key(key)
+    key = "#{@prefix}#{key}" if @prefix
+
+    key.to_s.upcase
+  end
+
+  def fetch_env(key, error_on_load: false)
+    key = build_key(key)
+
+    error_on_load ? ENV.fetch(key) : ENV[key]
   end
 end
