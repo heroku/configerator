@@ -137,6 +137,15 @@ describe Configerator do
 
         expect(config.example?).to be false
       end
+
+      it "namespace check fails with missing and an override" do
+        config.namespace :example, prefix: true do
+          config.override :bah, "bah"
+          config.optional :bin
+        end
+
+        expect(config.example?).to be false
+      end
     end
 
     describe "with prefix: false" do
