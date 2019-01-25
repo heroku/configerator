@@ -75,7 +75,7 @@ Over time your config will be customized to your app, for example:
 
 ```ruby
 # file: config/config.rb
-require 'configurator'
+require 'configerator'
 
 module Config
   extend Configerator
