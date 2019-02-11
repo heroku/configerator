@@ -11,7 +11,7 @@ require 'configerator/configerator'
 
 begin
   require 'dotenv/rails-now'
-rescue LoadError
+rescue LoadError, NameError
   # dotenv-rails not available
 end
 
